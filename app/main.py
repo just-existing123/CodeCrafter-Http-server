@@ -18,18 +18,38 @@ def main():
       request_txt = request.decode()  #we can decode this request to understandable text
       request_line = request_txt.split("\r\n")[0]
 
-      method , path , version = request_line.split(" ")
-
       print(request_line)
 
-      if (path=='/'):
-           OKresponse = b"HTTP/1.1 200 OK\r\n\r\n"
-           connection.sendall(OKresponse)
-      else:
-           Error_response = b"HTTP/1.1 404 Not Found\r\n\r\n"
-           connection.sendall(Error_response)
-    
+      method , path , version = request_line.split(" ")
+
+      print(path)
+
+      OK_response = b"HTTP/1.1 200 OK\r\n\r\n"
+      Error404_response = b"HTTP/1.1 404 Not Found\r\n\r\n"
+
+
+     #  if (path=='/'):
+     #       connection.sendall(OK_response)
+     #  else:
+     #       connection.sendall(Error404_response)
+
+      if(path.startswith("/echo/")):
+         input_str = path[6:]
+         content_len = len(input_str.encode())
+         response_header = (
+            f"HTTP/1.1 200 OK\r\n"
+            f"Content-Type: text/plain\r\n"
+            f"Content-Length: {content_len}\r\n"
+            f"\r\n"
+            f"{input_str}"
+         )
+
+         connection.sendall(response_header.encode())
+      else :
+         connection.sendall(Error404_response)
+
       connection.close()
+         
     # server_socket.accept()
 
 
