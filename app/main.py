@@ -32,8 +32,9 @@ def main():
      #       connection.sendall(OK_response)
      #  else:
      #       connection.sendall(Error404_response)
-
-      if(path.startswith("/echo/")):
+      if(path=="/") :
+         connection.sendall(OK_response)
+      elif(path.startswith("/echo/")):
          input_str = path[6:]
          content_len = len(input_str.encode())
          response_header = (
