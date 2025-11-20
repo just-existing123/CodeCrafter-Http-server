@@ -33,11 +33,13 @@ def main():
      #  else:
      #       connection.sendall(Error404_response)
       if(path=="/") :
+          #standard Ok response input
          connection.sendall(OK_response)
       elif(path.startswith("/echo/")):
          input_str = path[6:]
          content_len = len(input_str.encode())
          response_header = (
+            #f strings are used when I need to pass a variable value inside the string , it uses {} and retruns the variable value of the variable name inside the {}
             f"HTTP/1.1 200 OK\r\n"
             f"Content-Type: text/plain\r\n"
             f"Content-Length: {content_len}\r\n"
@@ -45,7 +47,7 @@ def main():
             f"{input_str}"
          )
 
-         connection.sendall(response_header.encode())
+         connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
       else :
          connection.sendall(Error404_response)
 
