@@ -48,6 +48,7 @@ def main():
          )
          connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
       elif(path.startswith("/user-agent")):
+         #a much safer and better method to slice and get the required line from the GET request
          headers = request_txt.split("\r\n")
          user_agent=""
          for header in headers:
