@@ -7,8 +7,8 @@ def main():
 
     # TODO: Uncomment the code below to pass the first stage
     #
-    server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    # server_socket = socket.create_server(("localhost", 4221))
+#     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    server_socket = socket.create_server(("localhost", 4221))
     # wait for client
 
     #server_socket.accept() waits for the client and when the client joins the http server it returns the client IP and a TCP connection pipe to the client for information transport 
@@ -46,8 +46,27 @@ def main():
             f"\r\n"
             f"{input_str}"
          )
-
          connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
+      elif(path.startswith("/user-agent")):
+         headers = request_txt.split("\r\n")
+         user_agent=""
+         for header in headers:
+            if(header.lower().startswith("user-agent:")):
+               user_agent= header[len("User-Agent: "):]
+               break
+
+         content_len = len(user_agent.encode())
+
+         print(f"dbg : this is user-agent : {user_agent}")
+
+         response_header = (
+            f"HTTP/1.1 200 OK\r\n"
+            f"Content-Type: text/plain\r\n"
+            f"Content-Length: {content_len}\r\n"
+            f"\r\n"
+            f"{user_agent}"
+         )
+         connection.sendall(response_header.encode())
       else :
          connection.sendall(Error404_response)
 
