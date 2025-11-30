@@ -1,7 +1,9 @@
 import socket  # noqa: F401
 import threading
+import sys 
+import os
 
-def handle_client(connection) :
+def handle_client(connection,directory) :
    request = connection.recv(1024)
    request_txt = request.decode()  #we can decode this request to understandable text
    request_line = request_txt.split("\r\n")[0]
@@ -51,6 +53,27 @@ def handle_client(connection) :
          f"{user_agent}"
       )
       connection.sendall(response_header.encode())
+   elif(path.startswith("/files/")):
+      filename = path[len("/files/"):]
+      full_path = os.path.join(directory,filename)
+
+      if(os.path.exists(full_path)):
+
+         with open(full_path,"rb") as file:
+            data = file.read()
+         
+         content_len = len(data)
+         response_header = (
+            f"HTTP/1.1 200 OK\r\n"
+            f"Content-Type: application/octet-stream\r\n"
+            f"Content-Length: {content_len}\r\n"
+            f"\r\n"
+         )
+
+         response_bytes = response_header.encode()
+         connection.sendall(response_bytes + data)
+      else :
+         connection.sendall(Error404_response)
    else :
       connection.sendall(Error404_response)
 
@@ -68,12 +91,16 @@ def main():
     server_socket = socket.create_server(("localhost", 4221))
     # wait for client
     
+    directory = "."
+    if(len(sys.argv)>2 and sys.argv[1]== "--directory"):
+       directory = sys.argv[2]
+       print(f"Serving Files from directory :{directory}")
 
     #server_socket.accept() waits for the client and when the client joins the http server it returns the client IP and a TCP connection pipe to the client for information transport 
     while True:
       connection , address = server_socket.accept() #acknowledges the client is connected
       
-      new_thread = threading.Thread(target=handle_client, args=(connection,))
+      new_thread = threading.Thread(target=handle_client, args=(connection,directory))
       new_thread.start()
          
     # server_socket.accept()
