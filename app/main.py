@@ -15,12 +15,8 @@ def handle_client(connection) :
    OK_response = b"HTTP/1.1 200 OK\r\n\r\n"
    Error404_response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
-   if(True) :
-      connection.sendall(OK_response)
-      return
-
    if(path=="/") :
-          #standard Ok response input
+       #standard Ok response input
       connection.sendall(OK_response)
    elif(path.startswith("/echo/")):
       input_str = path[6:]
@@ -33,6 +29,7 @@ def handle_client(connection) :
          f"\r\n"
          f"{input_str}"
       )
+      connection.sendall(OK_response)
       connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
    elif(path.startswith("/user-agent")):
       #a much safer and better method to slice and get the required line from the GET request
@@ -54,9 +51,12 @@ def handle_client(connection) :
          f"\r\n"
          f"{user_agent}"
       )
+      connection.sendall(OK_response)
       connection.sendall(response_header.encode())
    else :
       connection.sendall(Error404_response)
+
+   connection.close()
 
 
 
@@ -77,8 +77,6 @@ def main():
       
       new_thread = threading.Thread(target=handle_client, args=(connection,))
       new_thread.start()
-
-      connection.close()
          
     # server_socket.accept()
 
