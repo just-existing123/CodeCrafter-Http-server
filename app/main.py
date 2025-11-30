@@ -29,7 +29,6 @@ def handle_client(connection) :
          f"\r\n"
          f"{input_str}"
       )
-      connection.sendall(OK_response)
       connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
    elif(path.startswith("/user-agent")):
       #a much safer and better method to slice and get the required line from the GET request
@@ -51,7 +50,6 @@ def handle_client(connection) :
          f"\r\n"
          f"{user_agent}"
       )
-      connection.sendall(OK_response)
       connection.sendall(response_header.encode())
    else :
       connection.sendall(Error404_response)
