@@ -37,13 +37,6 @@ def handle_client(connection,directory) :
          #   f"{input_str}"
          # )
 
-         zipped_data = gzip.compress(input_str.encode())
-         #steps to compress data :
-         # 1) encode the normal text/input data into binary or byte format
-         # 2) the binary or byte format of the encoded data now can have mathematical repetitions which are made to collapse and remember as opening instructions for later by the compressor
-         # 3) the compressed data with the mathematical instruction is shipped
-         #LEGO ANALOGY FOR COMPRESSION
-
          enc_format = 0
          formats = []
          for header in headers:
@@ -56,25 +49,32 @@ def handle_client(connection,directory) :
                break
          
          if(enc_format==1):
+            zipped_data = gzip.compress(input_str.encode())
+            #steps to compress data :
+            # 1) encode the normal text/input data into binary or byte format
+            # 2) the binary or byte format of the encoded data now can have mathematical repetitions which are made to collapse and remember as opening instructions for later by the compressor
+            # 3) the compressed data with the mathematical instruction is shipped
+            #LEGO ANALOGY FOR COMPRESSION
+
+            content_len = len(zipped_data)
+
             response = (
                f"HTTP/1.1 200 OK\r\n"
                f"Content-Encoding: gzip\r\n"
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
-               f"{zipped_data}"
-            )
-            connection.sendall(response.encode())
+            ) 
+            connection.sendall(response.encode() + zipped_data)
          else:
             response = (
                f"HTTP/1.1 200 OK\r\n"
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
-               f"{zipped_data}"
+               f"{input_str}"
             )
-            connection.sendall(response.encode())
-         # connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
+            connection.sendall(response.encode()) #a response is always sent across encoded in bytes
       elif(path.startswith("/user-agent")):
         #a much safer and better method to slice and get the required line from the GET request
         user_agent=""
