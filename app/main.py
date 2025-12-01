@@ -27,14 +27,14 @@ def handle_client(connection,directory) :
       elif(path.startswith("/echo/")):
          input_str = path[6:]
          content_len = len(input_str.encode())
-         response_header = (
-           #f strings are used when I need to pass a variable value inside the string , it uses {} and retruns the variable value of the variable name inside the {}
-           f"HTTP/1.1 200 OK\r\n"
-           f"Content-Type: text/plain\r\n"
-           f"Content-Length: {content_len}\r\n"
-           f"\r\n"
-           f"{input_str}"
-         )
+         # response_header = (
+         #   #f strings are used when I need to pass a variable value inside the string , it uses {} and retruns the variable value of the variable name inside the {}
+         #   f"HTTP/1.1 200 OK\r\n"
+         #   f"Content-Type: text/plain\r\n"
+         #   f"Content-Length: {content_len}\r\n"
+         #   f"\r\n"
+         #   f"{input_str}"
+         # )
 
          enc_format = 0
          formats = []
