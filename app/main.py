@@ -56,7 +56,7 @@ def handle_client(connection,directory) :
                f"\r\n"
                f"{input_str}"
             )
-            connection.sendall(response)
+            connection.sendall(response.encode())
          else:
             response = (
                f"HTTP/1.1 200 OK\r\n"
@@ -65,7 +65,7 @@ def handle_client(connection,directory) :
                f"\r\n"
                f"{input_str}"
             )
-            connection.sendall(response)
+            connection.sendall(response.encode())
          # connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
       elif(path.startswith("/user-agent")):
         #a much safer and better method to slice and get the required line from the GET request
