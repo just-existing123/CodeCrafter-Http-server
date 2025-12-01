@@ -6,6 +6,7 @@ import os
 def handle_client(connection,directory) :
    request = connection.recv(1024)
    request_txt = request.decode()  #we can decode this request to understandable text
+   headers = request_txt.split("\r\n")
    request_line = request_txt.split("\r\n")[0]
 
    print(request_line)
@@ -34,10 +35,38 @@ def handle_client(connection,directory) :
            f"\r\n"
            f"{input_str}"
          )
-         connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
+
+         enc_format = 0
+         formats = []
+         for header in headers:
+            if(header.lower().startswith("accept-encoding: ")):
+               formats = header[len("accept-encoding: "):].split(" , ")
+
+         for format in formats:
+            if(format == "gzip"):
+               enc_format=1
+               break
+         
+         if(enc_format==1):
+            response = (
+               f"HTTP/1.1 200 OK\r\n"
+               f"Content-Encoding: gzip\r\n"
+               f"Content-Type: text/plain\r\n"
+               f"Content-Length: {content_len}\r\n"
+               f"\r\n"
+            )
+            connection.sendall(response)
+         else:
+            response = (
+               f"HTTP/1.1 200 OK\r\n"
+               f"Content-Type: text/plain\r\n"
+               f"Content-Length: {content_len}\r\n"
+               f"\r\n"
+            )
+            connection.sendall(response)
+         # connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
       elif(path.startswith("/user-agent")):
         #a much safer and better method to slice and get the required line from the GET request
-        headers = request_txt.split("\r\n")
         user_agent=""
         for header in headers:
            if(header.lower().startswith("user-agent:")):
@@ -93,7 +122,8 @@ def handle_client(connection,directory) :
             file.write(data)
          
          connection.sendall(Created201_response) 
-
+      else:
+         connection.sendall(Error404_response)
 
    connection.close()
 
