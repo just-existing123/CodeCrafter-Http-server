@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
 import sys 
 import os
+import gzip
 
 def handle_client(connection,directory) :
    request = connection.recv(1024)
@@ -36,6 +37,13 @@ def handle_client(connection,directory) :
          #   f"{input_str}"
          # )
 
+         zipped_data = gzip.compress(input_str.encode())
+         #steps to compress data :
+         # 1) encode the normal text/input data into binary or byte format
+         # 2) the binary or byte format of the encoded data now can have mathematical repetitions which are made to collapse and remember as opening instructions for later by the compressor
+         # 3) the compressed data with the mathematical instruction is shipped
+         #LEGO ANALOGY FOR COMPRESSION
+
          enc_format = 0
          formats = []
          for header in headers:
@@ -54,7 +62,7 @@ def handle_client(connection,directory) :
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
-               f"{input_str}"
+               f"{zipped_data}"
             )
             connection.sendall(response.encode())
          else:
@@ -63,7 +71,7 @@ def handle_client(connection,directory) :
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
-               f"{input_str}"
+               f"{zipped_data}"
             )
             connection.sendall(response.encode())
          # connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
