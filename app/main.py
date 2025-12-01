@@ -54,6 +54,7 @@ def handle_client(connection,directory) :
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
+               f"{input_str}"
             )
             connection.sendall(response)
          else:
@@ -62,6 +63,7 @@ def handle_client(connection,directory) :
                f"Content-Type: text/plain\r\n"
                f"Content-Length: {content_len}\r\n"
                f"\r\n"
+               f"{input_str}"
             )
             connection.sendall(response)
          # connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
