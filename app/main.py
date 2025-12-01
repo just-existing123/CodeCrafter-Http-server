@@ -16,66 +16,84 @@ def handle_client(connection,directory) :
 
    OK_response = b"HTTP/1.1 200 OK\r\n\r\n"
    Error404_response = b"HTTP/1.1 404 Not Found\r\n\r\n"
+   Created201_response = b"HTTP/1.1 201 Created\r\n\r\n"
 
-   if(path=="/") :
-       #standard Ok response input
-      connection.sendall(OK_response)
-   elif(path.startswith("/echo/")):
-      input_str = path[6:]
-      content_len = len(input_str.encode())
-      response_header = (
-         #f strings are used when I need to pass a variable value inside the string , it uses {} and retruns the variable value of the variable name inside the {}
-         f"HTTP/1.1 200 OK\r\n"
-         f"Content-Type: text/plain\r\n"
-         f"Content-Length: {content_len}\r\n"
-         f"\r\n"
-         f"{input_str}"
-      )
-      connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
-   elif(path.startswith("/user-agent")):
-      #a much safer and better method to slice and get the required line from the GET request
-      headers = request_txt.split("\r\n")
-      user_agent=""
-      for header in headers:
-         if(header.lower().startswith("user-agent:")):
-            user_agent= header[len("User-Agent: "):]
-            break
-
-      content_len = len(user_agent.encode())
-
-      print(f"dbg : this is user-agent : {user_agent}")
-
-      response_header = (
-         f"HTTP/1.1 200 OK\r\n"
-         f"Content-Type: text/plain\r\n"
-         f"Content-Length: {content_len}\r\n"
-         f"\r\n"
-         f"{user_agent}"
-      )
-      connection.sendall(response_header.encode())
-   elif(path.startswith("/files/")):
-      filename = path[len("/files/"):]
-      full_path = os.path.join(directory,filename)
-
-      if(os.path.exists(full_path)):
-
-         with open(full_path,"rb") as file:
-            data = file.read()
-         
-         content_len = len(data)
+   if(method == "GET"):
+      #the GET method
+      if(path=="/") :
+         #standard Ok response input
+         connection.sendall(OK_response)
+      elif(path.startswith("/echo/")):
+         input_str = path[6:]
+         content_len = len(input_str.encode())
          response_header = (
-            f"HTTP/1.1 200 OK\r\n"
-            f"Content-Type: application/octet-stream\r\n"
-            f"Content-Length: {content_len}\r\n"
-            f"\r\n"
+           #f strings are used when I need to pass a variable value inside the string , it uses {} and retruns the variable value of the variable name inside the {}
+           f"HTTP/1.1 200 OK\r\n"
+           f"Content-Type: text/plain\r\n"
+           f"Content-Length: {content_len}\r\n"
+           f"\r\n"
+           f"{input_str}"
          )
+         connection.sendall(response_header.encode()) #a response is always sent across encoded in bytes
+      elif(path.startswith("/user-agent")):
+        #a much safer and better method to slice and get the required line from the GET request
+        headers = request_txt.split("\r\n")
+        user_agent=""
+        for header in headers:
+           if(header.lower().startswith("user-agent:")):
+              user_agent= header[len("User-Agent: "):]
+              break
 
-         response_bytes = response_header.encode()
-         connection.sendall(response_bytes + data)
+        content_len = len(user_agent.encode())
+
+        print(f"dbg : this is user-agent : {user_agent}")
+
+        response_header = (
+           f"HTTP/1.1 200 OK\r\n"
+           f"Content-Type: text/plain\r\n"
+           f"Content-Length: {content_len}\r\n"
+           f"\r\n"
+           f"{user_agent}"
+         )
+        connection.sendall(response_header.encode())
+      elif(path.startswith("/files/")):
+         filename = path[len("/files/"):]
+         full_path = os.path.join(directory,filename)
+
+         if(os.path.exists(full_path)):
+
+          with open(full_path,"rb") as file:
+             data = file.read()
+         
+          content_len = len(data)
+          response_header = (
+             f"HTTP/1.1 200 OK\r\n"
+             f"Content-Type: application/octet-stream\r\n"
+             f"Content-Length: {content_len}\r\n"
+             f"\r\n"
+          )
+
+          response_bytes = response_header.encode()
+          connection.sendall(response_bytes + data)
+         else :
+            connection.sendall(Error404_response)
       else :
-         connection.sendall(Error404_response)
-   else :
-      connection.sendall(Error404_response)
+       connection.sendall(Error404_response)
+
+   elif(method=="POST"):
+      #the POST method
+      if(path.startswith("/files")):
+         filename = path[len("/files/"):]
+         full_path = os.path.join(directory,filename)
+
+         data = request_txt.split("\r\n\r\n")[1].encode()
+
+         with open(full_path,"wb") as file:
+            #when open() is used in "w" or "wb" mode it creates a file if the file does not exist
+            file.write(data)
+         
+         connection.sendall(Created201_response) 
+
 
    connection.close()
 
