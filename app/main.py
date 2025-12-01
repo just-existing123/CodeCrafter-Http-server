@@ -40,7 +40,7 @@ def handle_client(connection,directory) :
          formats = []
          for header in headers:
             if(header.lower().startswith("accept-encoding: ")):
-               formats = header[len("accept-encoding: "):].split(" , ")
+               formats = header[len("accept-encoding: "):].split(", ")
 
          for format in formats:
             if(format == "gzip"):
