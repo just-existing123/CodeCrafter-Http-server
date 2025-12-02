@@ -152,6 +152,13 @@ def handle_client(connection,directory) :
    except Exception as e :
       print(f"error :{e}")
    finally:
+      closing_response = (
+         f"HTTP/1.1 200 OK\r\n"
+         f"Connection: close"
+         f"\r\n"
+         f"Thank you"
+      )
+      connection.sendall(closing_response)
       connection.close()
 
 
