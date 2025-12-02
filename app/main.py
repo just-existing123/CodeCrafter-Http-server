@@ -71,6 +71,7 @@ def handle_client(connection,directory) :
 
                response = (
                   f"HTTP/1.1 200 OK\r\n"
+                  f"Connection: keep alive\r\n"
                   f"Content-Encoding: gzip\r\n"
                   f"Content-Type: text/plain\r\n"
                   f"Content-Length: {content_len}\r\n"
@@ -80,6 +81,7 @@ def handle_client(connection,directory) :
             else:
                response = (
                   f"HTTP/1.1 200 OK\r\n"
+                  f"Connection: keep alive\r\n"
                   f"Content-Type: text/plain\r\n"
                   f"Content-Length: {content_len}\r\n"
                   f"\r\n"
@@ -100,6 +102,7 @@ def handle_client(connection,directory) :
 
            response_header = (
               f"HTTP/1.1 200 OK\r\n"
+              f"Connection: keep alive\r\n"
               f"Content-Type: text/plain\r\n"
               f"Content-Length: {content_len}\r\n"
               f"\r\n"
@@ -118,6 +121,7 @@ def handle_client(connection,directory) :
              content_len = len(data)
              response_header = (
                 f"HTTP/1.1 200 OK\r\n"
+                f"Connection: keep alive\r\n"
                 f"Content-Type: application/octet-stream\r\n"
                 f"Content-Length: {content_len}\r\n"
                 f"\r\n"
