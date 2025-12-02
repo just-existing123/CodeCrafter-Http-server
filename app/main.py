@@ -15,14 +15,16 @@ def handle_client(connection,directory) :
       request_line = request_txt.split("\r\n")[0]
 
       print(request_line)
-
+      connection_status="keep alive"
       should_close=False
       for header in headers:
          if(header.lower().startswith("connection: ")):
             value = header[len("connection: "):]
             if(value.lower()=="close"):
                should_close=True
-
+      
+      if(should_close):
+         connection_status="close"
       method , path , version = request_line.split(" ")
 
       print(path)
@@ -71,7 +73,7 @@ def handle_client(connection,directory) :
 
                response = (
                   f"HTTP/1.1 200 OK\r\n"
-                  f"Connection: keep alive\r\n"
+                  f"Connection: {connection_status}\r\n"
                   f"Content-Encoding: gzip\r\n"
                   f"Content-Type: text/plain\r\n"
                   f"Content-Length: {content_len}\r\n"
@@ -81,7 +83,7 @@ def handle_client(connection,directory) :
             else:
                response = (
                   f"HTTP/1.1 200 OK\r\n"
-                  f"Connection: keep alive\r\n"
+                  f"Connection: {connection_status}\r\n"
                   f"Content-Type: text/plain\r\n"
                   f"Content-Length: {content_len}\r\n"
                   f"\r\n"
@@ -102,7 +104,7 @@ def handle_client(connection,directory) :
 
            response_header = (
               f"HTTP/1.1 200 OK\r\n"
-              f"Connection: keep alive\r\n"
+              f"Connection: {connection_status}\r\n"
               f"Content-Type: text/plain\r\n"
               f"Content-Length: {content_len}\r\n"
               f"\r\n"
@@ -121,7 +123,7 @@ def handle_client(connection,directory) :
              content_len = len(data)
              response_header = (
                 f"HTTP/1.1 200 OK\r\n"
-                f"Connection: keep alive\r\n"
+                f"Connection: {connection_status}\r\n"
                 f"Content-Type: application/octet-stream\r\n"
                 f"Content-Length: {content_len}\r\n"
                 f"\r\n"
@@ -151,13 +153,13 @@ def handle_client(connection,directory) :
             connection.sendall(Error404_response)
       
       if(should_close==True):
-         closing_response = (
-         f"HTTP/1.1 200 OK\r\n"
-         f"Connection: close"
-         f"\r\n"
-         f"Thank you"
-         )
-         connection.sendall(closing_response.encode())
+         # closing_response = (
+         # f"HTTP/1.1 200 OK\r\n"
+         # f"Connection: {connection_status}"
+         # f"\r\n"
+         # f"Thank you"
+         # )
+         # connection.sendall(closing_response.encode())
          break
 
    except Exception as e :
