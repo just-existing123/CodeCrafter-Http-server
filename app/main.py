@@ -147,18 +147,18 @@ def handle_client(connection,directory) :
             connection.sendall(Error404_response)
       
       if(should_close==True):
+         closing_response = (
+         f"HTTP/1.1 200 OK\r\n"
+         f"Connection: close"
+         f"\r\n"
+         f"Thank you"
+         )
+         connection.sendall(closing_response)
          break
 
    except Exception as e :
       print(f"error :{e}")
    finally:
-      closing_response = (
-         f"HTTP/1.1 200 OK\r\n"
-         f"Connection: close"
-         f"\r\n"
-         f"Thank you"
-      )
-      connection.sendall(closing_response)
       connection.close()
 
 
