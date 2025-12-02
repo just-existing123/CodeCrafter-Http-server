@@ -16,6 +16,11 @@ def handle_client(connection,directory) :
 
       print(request_line)
 
+      should_close=False
+      for header in headers:
+         if(header == "Connection: close"):
+            should_close = True
+
       method , path , version = request_line.split(" ")
 
       print(path)
@@ -120,16 +125,7 @@ def handle_client(connection,directory) :
              connection.sendall(response_bytes + data)
             else :
                connection.sendall(Error404_response)
-         else :
-          flag=0
-          for header in headers:
-             if(header == "Connection: close"):
-                flag=1
-                break
-          
-          if(flag==1):
-             break
-          else :
+         else:
              connection.sendall(Error404_response)
 
       elif(method=="POST"):
@@ -147,6 +143,9 @@ def handle_client(connection,directory) :
             connection.sendall(Created201_response) 
          else:
             connection.sendall(Error404_response)
+      
+      if(should_close==True):
+         break
 
    except Exception as e :
       print(f"error :{e}")
