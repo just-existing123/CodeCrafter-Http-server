@@ -121,9 +121,16 @@ def handle_client(connection,directory) :
             else :
                connection.sendall(Error404_response)
          else :
+          flag=0
           for header in headers:
              if(header == "Connection: close"):
+                flag=1
                 break
+          
+          if(flag==1):
+             break
+          else :
+             connection.sendall(Error404_response)
 
       elif(method=="POST"):
          #the POST method
