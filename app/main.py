@@ -153,7 +153,7 @@ def handle_client(connection,directory) :
          f"\r\n"
          f"Thank you"
          )
-         connection.sendall(closing_response)
+         connection.sendall(closing_response.encode())
          break
 
    except Exception as e :
