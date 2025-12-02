@@ -18,8 +18,10 @@ def handle_client(connection,directory) :
 
       should_close=False
       for header in headers:
-         if(header == "Connection: close"):
-            should_close = True
+         if(header.lower().startswith("connection: ")):
+            value = header[len("connection: "):]
+            if(value.lower()=="close"):
+               should_close=True
 
       method , path , version = request_line.split(" ")
 
