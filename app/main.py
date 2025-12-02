@@ -8,6 +8,8 @@ def handle_client(connection,directory) :
    try :
     while True:
       request = connection.recv(1024)
+      if not request:
+         break
       request_txt = request.decode()  #we can decode this request to understandable text
       headers = request_txt.split("\r\n")
       request_line = request_txt.split("\r\n")[0]
